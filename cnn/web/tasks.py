@@ -24,34 +24,33 @@ def task_google_trends_parser():
     parser = feedparser.parse(GOOGLE_TRENDS_HOURLY_ATOM)
     if parser.status != 200 or len(parser.entries) != 1:
         return
-    trends_updated = parser.feed.updated_parsed
-    convert_to_datetime = datetime.fromtimestamp(mktime(trends_updated)).replace(tzinfo=pytz.UTC)
-    trends_exists = GoogleTrendsAtom.objects.filter(updated=convert_to_datetime)
-    if trends_exists.count() > 0:
+    all_trends = GoogleTrendsAtom.objects.values('title', 'updated')
+    trends_updated = datetime.fromtimestamp(mktime(parser.feed.updated_parsed)).replace(tzinfo=pytz.UTC)
+    if trends_updated in (trend['updated'] for trend in all_trends):
         return
     trends_content = parser.entries[0].content[0].value
     trends_links = BeautifulSoup(trends_content, 'lxml').find_all('a')
     for each in trends_links:
-        GoogleTrendsAtom.objects.add_trend(each.text, each['href'], convert_to_datetime)
-        print(f"ADD RECORD TO DB: {each.text}")
+        if each.text not in (trend['title'] for trend in all_trends):
+            GoogleTrendsAtom.objects.add_trend(each.text, each['href'], trends_updated)
 
 
 @shared_task
 def task_cnn_channels_parser():
     """
-    :Shedule: everyday, at 23:59
+    :Shedule: everyday, at 23:49
     :description: update CnnChannels Model from main Cnn page
     :return: CnnChannel
     """
 
     make_request = requests.get(CNN_RSS_LIST_URL)
+    if make_request.status_code != 200:
+        return
     parser = BeautifulSoup(make_request.text, 'html.parser')
-    cnn_links = parser.find_all('a')
-    existed_channel = CnnChannels.objects.all()
-    for each in cnn_links:
-        print(f'CNN-RSS url: {each.text}')
-        if each.text and each.text.endswith('.rss') and each.text not in [channel.url for channel in existed_channel]:
-            print('add rss to CnnRssList')
+    feed_channels = parser.find_all('a')
+    existed_channels = CnnChannels.objects.values('url')
+    for each in feed_channels:
+        if each.text and each.text.endswith('.rss') and each.text not in (channel['url'] for channel in existed_channels):
             CnnChannels.objects.add_channel(each.text)
 
 
@@ -65,12 +64,11 @@ def task_cnn_news_parser():
     cnn_channel = CnnChannels.objects.all()
     if cnn_channel.count() == 0:
         return
-    existed_news = CnnNews.objects.all()
+    existed_news = CnnNews.objects.values('title')
     for channel in cnn_channel:
-        print(f"Start parse the channel: {channel.url}")
         parser = feedparser.parse(channel.url)
         for feed in parser.entries:
-            if not feed.title or feed.title in [news.title for news in existed_news]:
+            if not feed.title or feed.title in (news['title'] for news in existed_news):
                 continue
             try:
                 posted = datetime.fromtimestamp(mktime(feed.published_parsed)).replace(tzinfo=pytz.UTC)
@@ -83,7 +81,7 @@ def task_cnn_news_parser():
 @shared_task
 def task_delete_old_records():
     """
-    :Schedule: everyday
+    :Schedule: everyday, at 23:59
     :description: delete objects from CnnNew & GoogleTrendsAtom models older than week
     :return:
     """

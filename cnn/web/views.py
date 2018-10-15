@@ -1,5 +1,6 @@
 from django.views.generic import ListView
 from django.db.models import Subquery
+from django.db.models import CharField, Value
 
 from .models import GoogleTrendsAtom, CnnNews
 
@@ -18,5 +19,10 @@ class RelevantNews(ListView):
     paginate_by = 25
 
     def get_queryset(self):
-        google_trends = GoogleTrendsAtom.objects.all()
-        return CnnNews.objects.filter(title__icontains=Subquery(google_trends.values('title')))
+        google_trends = GoogleTrendsAtom.objects.values_list('title', flat=True)
+        queryset = CnnNews.objects.none()
+        for trend in google_trends:
+            relevant_news = CnnNews.objects.filter(title__icontains=trend)
+            if relevant_news:
+                queryset = queryset | relevant_news
+        return queryset
