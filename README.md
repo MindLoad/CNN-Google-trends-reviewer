@@ -23,6 +23,8 @@ Directories structure
 
 To work with project
 ----------------------------------
+- Redis should be installed, as broker for celery
+
 
 Start Django project
 
