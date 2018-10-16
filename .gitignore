@@ -111,3 +111,4 @@ local_settings.py
 .idea
 *.dir
 *.dat
+*.pid

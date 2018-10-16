@@ -84,7 +84,9 @@ USE_L10N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
+STATICFILES_DIRS = ('static', )
 STATIC_URL = '/static/'
+STATIC_ROOT = ''
 
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
