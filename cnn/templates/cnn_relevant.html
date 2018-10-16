@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+    <a href="{% url 'index' %}">Index page</a>
+    <table>
+        <th>Title</th>
+        <th>Trend</th>
+        <th>Posted</th>
+        <th>Channel</th>
+        <th>Source</th>
+        {% for news in news_collection %}
+            <tr>
+                <td>{{ news.title }}</td>
+                <td><b><i>{{ news.key_title }}</i></b></td>
+                <td>{{ news.posted }}</td>
+                <td>{{ news.channel }}</td>
+                <td><a href="{{ news.url }}" title="{{ news.url }}" target="_blank">source link</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    <div class="section"></div>
+    <hr>
+    {% if is_paginated %}
+        <div class="center">
+            <ul class="pagination">
+                {% for i in paginator.page_range %}
+                    {% if page_obj.number == i %}
+                        <li class="active"><a href="{% url 'CnnRelevantNews' %}#!">{{ i }}</a></li>
+                    {% else %}
+                        <li class="waves-effect"><a href="{% url 'CnnRelevantNews' %}?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <hr>
+    <div class="section"></div>
+
+{% endblock %}
