@@ -72,7 +72,7 @@ def task_cnn_news_parser():
                 continue
             try:
                 posted = datetime.fromtimestamp(mktime(feed.published_parsed)).replace(tzinfo=pytz.UTC)
-            except (KeyError, AttributeError) as error:
+            except (KeyError, AttributeError, TypeError) as error:
                 print(f"RSS Parse Error: {error}")
                 posted = datetime.now().replace(tzinfo=pytz.UTC)
             CnnNews.objects.add_news(channel, feed.title, feed.link, posted)

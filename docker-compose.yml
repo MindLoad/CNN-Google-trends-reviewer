@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+
+  postgres:
+    image: postgres:11-alpine
+    container_name: postgres_CNN
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_DB: 'CnnProject'
+      POSTGRES_PASSWORD: 'postgres'
+    volumes:
+    - ./initdb:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  redis:
+    container_name: redis_CNN
+    image: redis:5.0.0-alpine
+    ports:
+    - "6379:6379"
+    volumes:
+    - ./db/redis:/data
+    restart: always
+
+  web:
+    build: .
+    env_file: .env
+    command: python3 manage.py runserver_plus 0.0.0.0:8000
+    volumes:
+    - .:/code
+    ports:
+    - "8000:8000"
+    depends_on:
+    - postgres
+    - adminer
+    - redis
