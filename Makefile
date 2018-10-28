@@ -1,3 +1,5 @@
+up:
+	docker-compose up
 sh:
 	docker-compose exec web sh
 

@@ -5,9 +5,9 @@ from celery.schedules import crontab
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = '5#3_--@efvk4zok#@27c8hzv6wjrqfw6$*$w1j@=wzixbh4gbe'
+SECRET_KEY = os.getenv('DJANGO_KEY', '5#3_--@efvk4zok#@27c8hzv6wjrqfw6$*$w1j@=wzixbh4gbe')
 DEBUG = False
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
