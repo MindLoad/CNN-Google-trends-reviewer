@@ -1,0 +1,49 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+# Debug tools
+django-extensions = "~=2.1"
+ipdb = "~=0.12"
+ipython = "~=7.11"
+
+# Lint tools
+pylint = "~=2.4"
+pylint-django = "~=2.0"
+mypy = "~=0.7"
+pycodestyle = "~=2.5"
+safety = "~=1.8"
+bandit = "~=1.6"
+
+# Test tools
+pytest = "~=4.4"
+pytest-cov = "~=2.6"
+pytest-django = "~=3.4"
+pytest-sugar = "~=0.9"
+model-mommy = "~=1.6"
+
+[packages]
+pytz = ">=2019.3"
+six = "~=1.14"
+python-dateutil = "~=2.8"
+Django = "~=3.0"
+Werkzeug = "~=1.0"
+requests = "~=2.22"
+
+# DB
+psycopg2 = "==2.8.4"
+redis = "~=3.4"
+
+# Async
+celery = "~=4.4"
+django-celery-results = "~=1.2"
+feedparser = "~=5.2"
+
+# Parsers
+beautifulsoup4 = "~=4.8"
+
+[requires]
+python_version = "3.8"

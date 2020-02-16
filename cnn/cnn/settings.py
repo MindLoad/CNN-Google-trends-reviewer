@@ -117,6 +117,7 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute=59, hour=23),
     },
 }
+FLOWER_BROKER = 'amqp://user:password@broker:5672'
 
 try:
     from .local_settings import *

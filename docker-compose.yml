@@ -1,44 +1,99 @@
-version: '3'
+version: '3.4'
 
 services:
 
   postgres:
-    image: postgres:11-alpine
     container_name: postgres_CNN
+    hostname: postgres
+    image: postgres:11-alpine
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: 'postgres'
-      POSTGRES_DB: 'CnnProject'
       POSTGRES_PASSWORD: 'postgres'
+      POSTGRES_DB: 'CnnProject'
+      POSTGRES_HOST: 'postgres'
     volumes:
-    - ./initdb:/docker-entrypoint-initdb.d
-    restart: unless-stopped
+      - ./initdb:/docker-entrypoint-initdb.d
+    restart: on-failure
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
-
-  redis:
+  redis:               # Redis - result backend
     container_name: redis_CNN
-    image: redis:5.0.0-alpine
+    image: redis:5.0.7-alpine
     ports:
-    - "6379:6379"
+      - "6379:6379"
     volumes:
-    - ./db/redis:/data
+      - ./db/redis:/data
     restart: always
+
+  rabbitmq:            # RabbitMQ - queue
+    container_name: rabbitmq_CNN
+    hostname: rabbitmq
+    image: rabbitmq:3.8-management-alpine
+    ports:
+      - "5672:5672"    # We forward this port because it's useful for debugging
+      - "15672:15672"  # Here, we can access RabbitMQ management plugin
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=rabbitpass
+    volumes:
+      - ./db/rabbitmq:/var/lib/rabbitmq/mnesia/rabbit@rabbit3
+    restart: on-failure
+  flower:
+    container_name: flower_CNN
+    image: mher/flower:latest
+    command: sh -c "cd cnn && flower -A cnn --port=5555"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - FLOWER_PORT=8888
+    ports:  
+      - 8888:8888
+    depends_on:
+      - rabbitmq
+    links:
+      - web
+    restart: "no"
 
   web:
     build: .
     env_file: .env
-    command: python3 manage.py runserver 0.0.0.0:8000
+    container_name: web
+    hostname: web
+    command: sh -c "cd cnn && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
-    - .:/code
+      - .:/code
     ports:
-    - "8000:8000"
+      - 8000:8000
     depends_on:
-    - postgres
-    - adminer
-    - redis
+      - postgres
+      - redis
+      - rabbitmq
+
+  celery_worker:
+    build: .
+    container_name: celery_worker_CNN
+    hostname: celery_worker
+    command: sh -c "cd cnn && celery -A cnn worker -l info"
+    volumes:
+      - .:/code
+    depends_on:
+      - celery_beat
+    links:
+      - web
+    restart: "no"
+
+  celery_beat:
+    build: .
+    container_name: celery_beat_CNN
+    hostname: celery_beat
+    command: sh -c "cd cnn && celery -A cnn beat -l info"
+    volumes:
+      - .:/code
+    depends_on:
+      - web
+      - postgres
+      - redis
+      - rabbitmq
+    links:
+      - web
+    restart: "no"

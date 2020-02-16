@@ -1,3 +1,7 @@
+"""
+Celery tasks for interact with RSS
+"""
+
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task
 
@@ -15,12 +19,12 @@ CNN_RSS_LIST_URL = 'http://edition.cnn.com/services/rss/'
 
 
 @shared_task
-def task_google_trends_parser():
+def task_google_trends_parser() -> None:
     """
     Shedule: every hour
     :description: add Google trends
-    :return: GoogleTrendsAtom
     """
+
     parser = feedparser.parse(GOOGLE_TRENDS_HOURLY_ATOM)
     if parser.status != 200 or len(parser.entries) != 1:
         return
@@ -36,11 +40,10 @@ def task_google_trends_parser():
 
 
 @shared_task
-def task_cnn_channels_parser():
+def task_cnn_channels_parser() -> None:
     """
     :Shedule: everyday, at 23:49
     :description: update CnnChannels Model from main Cnn page
-    :return: CnnChannel
     """
 
     make_request = requests.get(CNN_RSS_LIST_URL)
@@ -55,12 +58,12 @@ def task_cnn_channels_parser():
 
 
 @shared_task
-def task_cnn_news_parser():
+def task_cnn_news_parser() -> None:
     """
     :Schedule: every half hour
     :description: collect CNN news from each channel
-    :return: CnnNews
     """
+
     cnn_channel = CnnChannels.objects.all()
     if cnn_channel.count() == 0:
         return
@@ -79,11 +82,10 @@ def task_cnn_news_parser():
 
 
 @shared_task
-def task_delete_old_records():
+def task_delete_old_records() -> None:
     """
     :Schedule: everyday, at 23:59
     :description: delete objects from CnnNew & GoogleTrendsAtom models older than week
-    :return:
     """
 
     previous_week = datetime.now() - timedelta(days=7)
