@@ -1,12 +1,13 @@
 import os
 from datetime import timedelta
 from celery.schedules import crontab
-
+from kombu import Queue, Exchange
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('DJANGO_KEY', '5#3_--@efvk4zok#@27c8hzv6wjrqfw6$*$w1j@=wzixbh4gbe')
-DEBUG = False
+DEBUG = True
+TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
@@ -92,29 +93,47 @@ STATICFILES_DIRS = ('static', )
 STATIC_URL = '/static/'
 STATIC_ROOT = ''
 
+# Set celery errors
+CELERY_SEND_TASK_ERROR_EMAILS = False
+
 CELERY_BROKER_URL = 'redis://redis:6379'
+# Set result backend
 CELERY_RESULT_BACKEND = 'redis://redis:6379'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_RESULT_SERIALIZER = 'json'
+CELERY_REDIS_MAX_CONNECTIONS = 1
+
+# Set celery serializer
 CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['application/json']
+
+# Set celery Queues
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_QUEUES = (
+    Queue('default', Exchange('default'), routing_key='default'),
+)
+
+# Set celery timezone
+CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = 'Europe/Kiev'
+
+# Set celery schedule
 CELERY_BEAT_SCHEDULE = {
     'task-cnn-news-parser': {
         'task': 'web.tasks.task_cnn_news_parser',
-        'schedule': timedelta(seconds=1800),
+        'schedule': timedelta(seconds=100),
         # 'args': (*args) # if celery task receive args,
     },
     'task-cnn-channels-parser': {
         'task': 'web.tasks.task_cnn_channels_parser',
-        'schedule': crontab(minute=49, hour=23),
+        'schedule': timedelta(seconds=300),
     },
     'task-google-trends-parser': {
         'task': 'web.tasks.task_google_trends_parser',
-        'schedule': timedelta(seconds=3600),
+        'schedule': timedelta(seconds=200),
     },
     'task-delete-old-records': {
         'task': 'web.tasks.task_delete_old_records',
-        'schedule': crontab(minute=59, hour=23),
+        'schedule': timedelta(seconds=350),
     },
 }
 FLOWER_BROKER = 'amqp://user:password@broker:5672'

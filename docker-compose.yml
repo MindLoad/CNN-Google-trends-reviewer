@@ -71,6 +71,7 @@ services:
 
   celery_worker:
     build: .
+    env_file: .env
     container_name: celery_worker_CNN
     hostname: celery_worker
     command: sh -c "cd cnn && celery -A cnn worker -l info"
@@ -80,10 +81,12 @@ services:
       - celery_beat
     links:
       - web
+      - postgres
     restart: "no"
 
   celery_beat:
     build: .
+    env_file: .env
     container_name: celery_beat_CNN
     hostname: celery_beat
     command: sh -c "cd cnn && celery -A cnn beat -l info"
@@ -96,4 +99,5 @@ services:
       - rabbitmq
     links:
       - web
+      - postgres
     restart: "no"
