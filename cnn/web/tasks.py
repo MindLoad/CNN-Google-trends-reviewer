@@ -14,7 +14,6 @@ from time import mktime
 
 from .models import GoogleTrendsAtom, CnnChannels, CnnNews
 
-GOOGLE_TRENDS_HOURLY_ATOM = 'https://trends.google.com/trends/hottrends/atom/hourly'
 CNN_RSS_LIST_URL = 'http://edition.cnn.com/services/rss/'
 
 

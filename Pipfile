@@ -26,12 +26,15 @@ pytest-sugar = "~=0.9"
 model-mommy = "~=1.6"
 
 [packages]
+
+# Django
 pytz = ">=2019.3"
 six = "~=1.14"
-python-dateutil = "~=2.8"
 Django = "~=3.0"
 Werkzeug = "~=1.0"
 requests = "~=2.22"
+python-dateutil = "~=2.8"
+returns = "~=0.13"
 
 # DB
 psycopg2 = "==2.8.4"
@@ -40,10 +43,10 @@ redis = "~=3.4"
 # Async
 celery = "~=4.4"
 django-celery-results = "~=1.2"
-feedparser = "~=5.2"
 
 # Parsers
 beautifulsoup4 = "~=4.8"
+feedparser = "~=5.2"
 
 [requires]
 python_version = "3.8"

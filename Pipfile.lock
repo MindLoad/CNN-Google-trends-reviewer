@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7e7966749dbbcd7f7582cce3faa59c45b44df4ea6d05c509759824c41ccd821f"
+            "sha256": "84c3b6d2a58dcef5edf0fd328a5f9518c73fe8d6ce4a3d46cbfe62350b2895ff"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -158,6 +158,14 @@
             "index": "pypi",
             "version": "==2.22.0"
         },
+        "returns": {
+            "hashes": [
+                "sha256:2de5bd9c1a754c76aead1af33cd183ad0ed71fa7199cf67865e28f4fae349b6c",
+                "sha256:6003e1a4ef414ec36b42b1cf29a8a87c65f305ab5c9ef7a794eaa4cfb5ad5b6e"
+            ],
+            "index": "pypi",
+            "version": "==0.13.0"
+        },
         "six": {
             "hashes": [
                 "sha256:236bdbdce46e6e6a3d61a337c0f8b763ca1e8717c03b369e87a7ec7ce1319c0a",
@@ -179,6 +187,14 @@
                 "sha256:7c3dca29c022744e95b547e867cee89f4fce4373f3549ccd8797d8eb52cdb873"
             ],
             "version": "==0.3.0"
+        },
+        "typing-extensions": {
+            "hashes": [
+                "sha256:091ecc894d5e908ac75209f10d5b4f118fbdb2eb1ede6a63544054bb1edb41f2",
+                "sha256:910f4656f54de5993ad9304959ce9bb903f90aadc7c67a0bef07e678014e892d",
+                "sha256:cf8b63fedea4d89bab840ecbb93e75578af28f76f66c35889bd7065f5af88575"
+            ],
+            "version": "==3.7.4.1"
         },
         "urllib3": {
             "hashes": [
@@ -336,17 +352,17 @@
         },
         "gitdb2": {
             "hashes": [
-                "sha256:0a84c85d07166cefaf10fa4b728a8a1b847a7f0d081e2fbe083185462158c126",
-                "sha256:51380b9d8b977b42ac9fc3a8e17af90a56ffc573ca9c6b79f99033b04f29f457"
+                "sha256:0375d983fd887d03c8942e81b1b0abc6c320cfb500cd3fe0d9c0eac87fbf2b52",
+                "sha256:b2b3a67090c17dc61f8407ca485e79ae811225ab5ebcd98ac5ee01448e8987b5"
             ],
-            "version": "==3.0.0"
+            "version": "==3.0.2"
         },
         "gitpython": {
             "hashes": [
-                "sha256:99c77677f31f255e130f3fed4c8e0eebb35f1a09df98ff965fff6774f71688cf",
-                "sha256:99cd0403cecd8a13b95d2e045b9fcaa7837137fcc5ec3105f2c413305d82c143"
+                "sha256:620b3c729bbc143b498cfea77e302999deedc55faec5b1067086c9ef90e101bc",
+                "sha256:a43a5d88a5bbc3cf32bb5223e4b4e68fd716db5e9996cad6e561bbfee6e5f4af"
             ],
-            "version": "==3.0.7"
+            "version": "==3.0.8"
         },
         "idna": {
             "hashes": [
