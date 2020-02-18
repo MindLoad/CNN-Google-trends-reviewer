@@ -9,9 +9,10 @@ Cloning the project repository
 Technologies/frameworks stack
 -----------------------------
 
-* Programming language - Python 3.6.6
-* Web framework - Django 2.1.2
-* DB - SQlite, Redis, Celery
+* Programming language - Python >= 3.8
+* Web framework - Django >= 3
+* DB - PostgreSQL, RabbitMQ, Redis
+* async tasks - Celery, Flower
 
 Directories structure
 ---------------------
@@ -19,23 +20,21 @@ Directories structure
     cnn/cnn          - main django project
     cnn/web          - project application
     cnn/templates    - html templates for project
-    requirements.txt - list of required third-party Python libraries
+    Pipfile          - required python project libraries
 
 To work with project
 ----------------------------------
-- Redis should be installed, as broker for celery
+- Redis should be installed, as result backend for celery
+- RabbitMQ should be installed, as Queue manager for celery
 
 
-Start Django project
+Start Django project for first time
 
 ```
 #!bash
 
 cd cnn
-python manage.py makemigrations
-python manage.py migrate
 python manage.py createsuperuser
-python manage.py runserver
 
 ```
 
@@ -43,20 +42,17 @@ Start celery worker
 ```
 #!bash
 
-cd cnn
-celery -A cnn worker -l info
+cd cnn && celery -A cnn worker -l info
 ```
 Start celery beat
 ```
 #!bash
 
-cd cnn
-celery -A cnn beat -l info
+cd cnn && celery -A cnn beat -l info
 ```
 Start celery Flower
 ```
 #!bash
 
-cd cnn
-flower -A cnn --port=5555
+cd cnn && flower -A cnn --port=5555
 ```
