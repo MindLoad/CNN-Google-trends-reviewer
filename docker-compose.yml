@@ -40,7 +40,7 @@ services:
       - 6379:6379
     volumes:
       - ./db/redis:/data
-    restart: always
+    restart: on-failure
 
   rabbitmq:            # RabbitMQ - queue
     image: rabbitmq:3.8-management-alpine
@@ -68,8 +68,6 @@ services:
       - FLOWER_PORT=8888
     depends_on:
       - rabbitmq
-    links:
-      - web
     restart: "no"
 
   celery_worker:
@@ -82,9 +80,6 @@ services:
       - .:/code
     depends_on:
       - celery_beat
-    links:
-      - web
-      - postgres
     restart: "no"
 
   celery_beat:
@@ -100,7 +95,4 @@ services:
       - postgres
       - redis
       - rabbitmq
-    links:
-      - web
-      - postgres
     restart: "no"

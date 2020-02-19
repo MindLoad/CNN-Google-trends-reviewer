@@ -2,26 +2,40 @@
 
 LINT_TARGETS := $(shell find . -name '*.py')
 LINT_ARGS := $(shell echo -r)
+CMD_PREFIX := docker exec -ti web
 
-# Bash commands
+# Portainer
+
+portainer:
+	docker run --rm -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
+
+# Shell & Debug commands
+
+sh:
+	@$(CMD_PREFIX) sh
+
+shell:
+	@$(CMD_PREFIX) python3 cnn/manage.py shell_plus
+
+shell_sql:
+	@$(CMD_PREFIX) python3 cnn/manage.py shell_plus --print-sql
 
 up:
 	docker-compose stop
-	docker-compose up
+	docker-compose up -d
+
+start stopstart: %start : %
+	@docker-compose up -d
+
+stop:
+	docker-compose stop
 
 rebuild:
 	docker-compose stop
 	docker-compose down
 	docker-compose up --no-deps --force-recreate --build
 
-portainer:
-	docker run --rm -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
-
-sh:
-	docker-compose exec web sh
-
-shell:
-	docker-compose exec web python3 cnn/manage.py shell_plus
+# Celery commands
 
 worker:
 	docker-compose exec web celery -A cnn worker -l info
@@ -31,6 +45,23 @@ beat:
 
 flower:
 	docker-compose exec -it web flower -A cnn --port=5555
+
+# Project initialization
+
+migrate:
+	@$(CMD_PREFIX) python3 cnn/manage.py migrate
+
+init-admin:
+	@docker exec -it web python3 cnn/manage.py shell -c "from django.contrib.auth import get_user_model; USER = get_user_model(); USER.objects.filter(username='admin').exists() or USER.objects.create_superuser(username='admin', password='admin')"
+
+init:
+	@$(MAKE) start
+	@sleep 120
+	@$(MAKE) migrate
+	@$(MAKE) init-admin
+	@$(MAKE) stopstart
+
+# Linters & Tests
 
 lint_pylint:
 	@echo '[PYLINT]'
