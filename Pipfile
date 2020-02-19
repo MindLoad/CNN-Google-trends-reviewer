@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 # Debug tools
-django-extensions = "~=2.1"
+django-extensions = "~=2.2"
 ipdb = "~=0.12"
 ipython = "~=7.11"
 

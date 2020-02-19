@@ -18,8 +18,8 @@ class BaseModel(models.Model):
 
 class GoogleTrendsAtomManager(models.Manager):
     """ Custom manager for GoogleTrendsAtom """
-    def add_trend(self, title, url, updated):
-        record = self.create(title=title, url=url, updated=updated)
+    def add_trend(self, title, url, updated, snippet):
+        record = self.create(title=title, url=url, updated=updated, snippet=snippet)
         return record
 
 
@@ -27,6 +27,7 @@ class GoogleTrendsAtom(BaseModel):
     """ Google Trends Model """
 
     updated = models.DateTimeField()
+    snippet = models.CharField(max_length=512, null=True)
 
     objects = GoogleTrendsAtomManager()
 

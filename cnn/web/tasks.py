@@ -12,7 +12,10 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from time import mktime
 
+from returns import pipeline as pipeline_monad
+
 from .models import GoogleTrendsAtom, CnnChannels, CnnNews
+from . import parser as atom_parser
 
 CNN_RSS_LIST_URL = 'http://edition.cnn.com/services/rss/'
 
@@ -24,11 +27,12 @@ def task_google_trends_parser() -> None:
     :description: add Google trends
     """
 
-    parser = feedparser.parse(GOOGLE_TRENDS_HOURLY_ATOM)
-    if parser.status != 200 or len(parser.entries) != 1:
+    trends = atom_parser.TrendsParser.parse()
+    if not pipeline_monad.is_successful(trends):
         return
-    all_trends = GoogleTrendsAtom.objects.values('title', 'updated')
-    trends_updated = datetime.fromtimestamp(mktime(parser.feed.updated_parsed)).replace(tzinfo=pytz.UTC)
+
+    saved_trends = GoogleTrendsAtom.objects.values('title', 'updated')
+
     if trends_updated in (trend['updated'] for trend in all_trends):
         return
     trends_content = parser.entries[0].content[0].value
