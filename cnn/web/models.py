@@ -26,13 +26,13 @@ class GoogleTrendsAtomManager(models.Manager):
 class GoogleTrendsAtom(BaseModel):
     """ Google Trends Model """
 
-    updated = models.DateTimeField()
+    published = models.DateTimeField()
     snippet = models.CharField(max_length=512, null=True)
 
     objects = GoogleTrendsAtomManager()
 
     class Meta(BaseModel.Meta):
-        ordering = ['-updated']
+        ordering = ['-published']
         verbose_name_plural = 'Google Trends'
 
 

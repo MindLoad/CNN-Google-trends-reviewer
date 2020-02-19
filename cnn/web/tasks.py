@@ -31,7 +31,15 @@ def task_google_trends_parser() -> None:
     if not pipeline_monad.is_successful(trends):
         return
 
-    saved_trends = GoogleTrendsAtom.objects.values('title', 'updated')
+    trends = trends.unwrap()
+    duplicated_trends = GoogleTrendsAtom.objects.filter(
+        title__in=[item['title'] for item in trends],
+        published__in=[item['published_parsed'] for item in trends],
+    ).values('title')
+
+    for each in duplicated_trends:
+        trends.
+
 
     if trends_updated in (trend['updated'] for trend in all_trends):
         return

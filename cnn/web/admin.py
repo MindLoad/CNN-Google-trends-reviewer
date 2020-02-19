@@ -9,8 +9,8 @@ admin.site.register(CnnChannels)
 class GoogleTrendsAtomAdmin(admin.ModelAdmin):
     """ Google Trends model """
 
-    fields = ['title', 'url', 'updated']
-    list_display = ('title', 'url', 'updated')
+    fields = ['title', 'url', 'published']
+    list_display = ('title', 'url', 'published')
     list_display_links = ('title',)
     search_fields = ('title',)
     list_per_page = 25
