@@ -21,7 +21,7 @@ shell_sql:
 	@$(CMD_PREFIX) python3 cnn/manage.py shell_plus --print-sql
 
 runserver:
-	@$(CMD_PREFIX) python3 cnn/manage.py runserver 0.0.0.0:8000 --print-sql
+	@$(CMD_PREFIX) python3 cnn/manage.py runserver 0.0.0.0:8000
 
 runserver_plus:
 	@$(CMD_PREFIX) python3 cnn/manage.py runserver_plus 0.0.0.0:8000 --print-sql

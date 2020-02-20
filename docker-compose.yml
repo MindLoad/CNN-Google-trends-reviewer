@@ -7,10 +7,11 @@ services:
     env_file: .env
     container_name: web
     hostname: web
-    command: sh -c "cd cnn && python manage.py migrate && python manage.py runserver_plus 0.0.0.0:8000 --print-sql"
+    command: sh -c "./start.sh"
     volumes:
       - .:/code
     ports:
+      - 2227:2227 # ssh
       - 8000:8000
     depends_on:
       - postgres
