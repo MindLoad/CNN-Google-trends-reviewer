@@ -31,23 +31,7 @@ def task_google_trends_parser() -> None:
     if not pipeline_monad.is_successful(trends):
         return
 
-    trends = trends.unwrap()
-    duplicated_trends = GoogleTrendsAtom.objects.filter(
-        title__in=[item['title'] for item in trends],
-        published__in=[item['published_parsed'] for item in trends],
-    ).values('title')
-
-    for each in duplicated_trends:
-        trends.
-
-
-    if trends_updated in (trend['updated'] for trend in all_trends):
-        return
-    trends_content = parser.entries[0].content[0].value
-    trends_links = BeautifulSoup(trends_content, 'lxml').find_all('a')
-    for each in trends_links:
-        if each.text not in (trend['title'] for trend in all_trends):
-            GoogleTrendsAtom.objects.add_trend(each.text, each['href'], trends_updated)
+    GoogleTrendsAtom.objects.bulk_create(trends.unwrap())
 
 
 @shared_task

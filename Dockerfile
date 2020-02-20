@@ -35,10 +35,9 @@ RUN pip install pipenv
 
 RUN mkdir /code
 COPY . /code/
-WORKDIR /code
 
+WORKDIR /code
 RUN pipenv install -d --deploy --system --ignore-pipfile
 
 WORKDIR /code/cnn
-
 CMD ["/bin/sh", "/code/start.sh"]

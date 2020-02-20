@@ -10,9 +10,10 @@ class GoogleTrendsAtomAdmin(admin.ModelAdmin):
     """ Google Trends model """
 
     fields = ['title', 'url', 'published']
-    list_display = ('title', 'url', 'published')
+    list_display = ('title', 'snippet', 'published')
     list_display_links = ('title',)
     search_fields = ('title',)
+    ordering = ('-published',)
     list_per_page = 25
 
 

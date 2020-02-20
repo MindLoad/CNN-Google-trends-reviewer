@@ -31,28 +31,8 @@ To work with project
 Start Django project for first time
 
 ```
-#!bash
-
-cd cnn
-python manage.py createsuperuser
-
-```
-
-Start celery worker
-```
-#!bash
-
-cd cnn && celery -A cnn worker -l info
-```
-Start celery beat
-```
-#!bash
-
-cd cnn && celery -A cnn beat -l info
-```
-Start celery Flower
-```
-#!bash
-
-cd cnn && flower -A cnn --port=5555
+make up
+make migrate
+make init-admin
+make runserver
 ```

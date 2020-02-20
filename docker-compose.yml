@@ -75,7 +75,7 @@ services:
     env_file: .env
     container_name: celery_worker_CNN
     hostname: celery_worker
-    command: sh -c "dockerize -wait tcp://rabbitmq:5672 && cd cnn && celery -A cnn worker -l info"
+    command: sh -c "dockerize -wait tcp://rabbitmq:5672 && celery -A cnn worker -l info"
     volumes:
       - .:/code
     depends_on:
@@ -87,7 +87,7 @@ services:
     env_file: .env
     container_name: celery_beat_CNN
     hostname: celery_beat
-    command: sh -c "dockerize -wait tcp://rabbitmq:5672 && cd cnn && celery -A cnn beat -l info"
+    command: sh -c "dockerize -wait tcp://rabbitmq:5672 && celery -A cnn beat -l info"
     volumes:
       - .:/code
     depends_on:
