@@ -15,16 +15,16 @@ sh:
 	@$(CMD_PREFIX) sh
 
 shell:
-	@$(CMD_PREFIX) python3 cnn/manage.py shell_plus
+	@$(CMD_PREFIX) python manage.py shell_plus
 
 shell_sql:
-	@$(CMD_PREFIX) python3 cnn/manage.py shell_plus --print-sql
+	@$(CMD_PREFIX) python manage.py shell_plus --print-sql
 
 runserver:
-	@$(CMD_PREFIX) python3 cnn/manage.py runserver 0.0.0.0:8000
+	@$(CMD_PREFIX) python manage.py runserver 0.0.0.0:8000
 
 runserver_plus:
-	@$(CMD_PREFIX) python3 cnn/manage.py runserver_plus 0.0.0.0:8000 --print-sql
+	@$(CMD_PREFIX) python manage.py runserver_plus 0.0.0.0:8000 --print-sql
 
 up:
 	docker-compose stop
@@ -36,10 +36,13 @@ start stopstart: %start : %
 stop:
 	docker-compose stop
 
-rebuild:
+build:
 	docker-compose stop
 	docker-compose down
-	docker-compose up --no-deps --force-recreate --build -d
+	docker-compose build --force-rm --no-cache --pull
+
+top:
+	docker-compose top
 
 # Celery commands
 
@@ -55,10 +58,10 @@ flower:
 # Project initialization
 
 migrate:
-	@$(CMD_PREFIX) python3 cnn/manage.py migrate
+	@$(CMD_PREFIX) python manage.py migrate
 
 init-admin:
-	@$(CMD_PREFIX) python3 cnn/manage.py shell -c "from django.contrib.auth import get_user_model; USER = get_user_model(); USER.objects.filter(username='admin').exists() or USER.objects.create_superuser(username='admin', password='admin')"
+	@$(CMD_PREFIX) python manage.py shell -c "from django.contrib.auth import get_user_model; USER = get_user_model(); USER.objects.filter(username='admin').exists() or USER.objects.create_superuser(username='admin', password='admin')"
 
 init:
 	@$(MAKE) start
@@ -79,7 +82,7 @@ update-requirements:
 
 lint_pylint:
 	@echo '[PYLINT]'
-	pylint --rcfile=.pylintrc *.py cnn/ cnn/cnn cnn/web/
+	pylint --rcfile=.pylintrc *.py / /cnn /web/
 
 lint_pycodestyle:
 	@echo '[PYCODESTYLE]'

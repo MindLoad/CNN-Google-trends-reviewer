@@ -7,12 +7,11 @@ services:
     env_file: .env
     container_name: web
     hostname: web
-    command: sh -c "./start.sh"
     volumes:
       - .:/code
     ports:
       - 2227:2227 # ssh
-      - 8000:8000
+      - 8000:8000 # django
     depends_on:
       - postgres
       - redis
@@ -61,7 +60,7 @@ services:
     image: mher/flower:latest
     container_name: flower_CNN
     hostname: flower
-    command: sh -c "cd cnn && flower -A cnn --port=5555"
+    command: sh -c "flower -A cnn --port=5555"
     ports:
       - 8888:8888
     environment:

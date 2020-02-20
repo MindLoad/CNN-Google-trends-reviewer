@@ -15,7 +15,7 @@ ADD https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/do
 RUN tar -C /usr/local/bin -xzvf /dockerize.tar.gz && rm -f /dockerize.tar.gz
 
 # Install system dependencies
-RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev
+RUN apk update && apk add postgresql-dev gcc musl-dev
 
 # Insall ssh agent
 RUN apk add --no-cache openssh make && \
@@ -39,4 +39,6 @@ WORKDIR /code
 
 RUN pipenv install -d --deploy --system --ignore-pipfile
 
-CMD ["pipenv", "shell"]
+WORKDIR /code/cnn
+
+CMD ["/bin/sh", "/code/start.sh"]
