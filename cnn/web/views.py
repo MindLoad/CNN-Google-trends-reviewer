@@ -21,7 +21,7 @@ class RelevantNews(ListView):
 
     def get_queryset(self):
         queryset = (CnnNews.objects.extra(tables=[GoogleTrendsAtom._meta.db_table])
-                    .annotate(key_title=RawSQL('{}.{}'.format(GoogleTrendsAtom._meta.db_table, GoogleTrendsAtom.title.field_name), ()))
+                    .annotate(key_title=RawSQL('{}.{}'.format(GoogleTrendsAtom._meta.db_table, GoogleTrendsAtom.title.field.name), ()))
                     .filter(title__icontains=F('key_title'))
                     .order_by('-posted')
                     .distinct())

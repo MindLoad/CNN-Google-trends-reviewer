@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+    <ul class="collapsible">
+        <li>
+            <div class="collapsible-header"><i class="material-icons"></i>First</div>
+            <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+        </li>
+        <li>
+            <div class="collapsible-header"><i class="material-icons">place</i>Second</div>
+            <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+        </li>
+    </ul>
+{% endblock %}
+{% block js %}
+    <script>
+        M.AutoInit();
+        $(document).ready(function(){
+            $('.collapsible').collapsible();
+        });
+    </script>
+{% endblock %}
