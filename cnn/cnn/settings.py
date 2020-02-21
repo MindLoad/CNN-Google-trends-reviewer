@@ -1,4 +1,5 @@
 import os
+import kombu
 from datetime import timedelta
 from celery.schedules import crontab
 from kombu import Queue, Exchange
@@ -96,7 +97,9 @@ STATIC_ROOT = ''
 # Set celery errors
 CELERY_SEND_TASK_ERROR_EMAILS = False
 
-CELERY_BROKER_URL = 'redis://redis:6379'
+# CELERY_BROKER_URL = 'redis://redis:6379'  # Redis broker
+CELERY_BROKER_URL = 'amqp://admin:rabbitpass@rabbitmq:5672'
+
 # Set result backend
 CELERY_RESULT_BACKEND = 'redis://redis:6379'
 CELERY_REDIS_MAX_CONNECTIONS = 1
@@ -111,6 +114,23 @@ CELERY_DEFAULT_QUEUE = 'default'
 CELERY_QUEUES = (
     Queue('default', Exchange('default'), routing_key='default'),
 )
+
+
+
+
+
+
+CELERY_TASK_DEFAULT_QUEUE = 'default'
+CELERY_TASK_QUEUES = (
+    kombu.Queue('default', kombu.Exchange('default'), routing_key='default', queue_arguments={'x-max-priority': 1})
+)
+
+CELERY_TASK_ROUTES = {
+    '....apps.app_name.tasks.*': {'queue': 'task_name'},
+}
+
+
+
 
 # Set celery timezone
 CELERY_ENABLE_UTC = True

@@ -6,6 +6,7 @@ from __future__ import absolute_import, unicode_literals
 from celery import shared_task
 
 import pytz
+import typing
 import feedparser
 import requests
 from bs4 import BeautifulSoup
@@ -21,7 +22,7 @@ CNN_RSS_LIST_URL = 'http://edition.cnn.com/services/rss/'
 
 
 @shared_task
-def task_google_trends_parser() -> None:
+def task_google_trends_parser() -> typing.Optional[str]:
     """
     Shedule: every hour
     :description: add Google trends
@@ -31,7 +32,10 @@ def task_google_trends_parser() -> None:
     if not pipeline_monad.is_successful(trends):
         return
 
-    GoogleTrendsAtom.objects.bulk_create(trends.unwrap())
+    trends = trends.unwrap()
+    GoogleTrendsAtom.objects.bulk_create(trends)
+
+    return f"Number of added trends: {len(trends)}"
 
 
 @shared_task
