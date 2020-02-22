@@ -110,27 +110,21 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['application/json']
 
 # Set celery Queues
-CELERY_DEFAULT_QUEUE = 'default'
-CELERY_QUEUES = (
-    Queue('default', Exchange('default'), routing_key='default'),
-)
-
-
-
-
-
-
-CELERY_TASK_DEFAULT_QUEUE = 'default'
 CELERY_TASK_QUEUES = (
-    kombu.Queue('default', kombu.Exchange('default'), routing_key='default', queue_arguments={'x-max-priority': 1})
+    Queue('default', Exchange('default'), routing_key='default'),
+    Queue('high', Exchange('high'), routing_key='high'),
+    Queue('low', Exchange('low'), routing_key='low'),
 )
-
+CELERY_TASK_DEFAULT_QUEUE = 'default'
+CELERY_TASK_DEFAULT_EXCHANGE = 'default'
+CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 CELERY_TASK_ROUTES = {
-    '....apps.app_name.tasks.*': {'queue': 'task_name'},
+    # -- HIGH PRIORITY QUEUE -- #
+    'web.tasks.task_google_trends_parser': {'queue': 'high'},
+    'web.tasks.task_cnn_news_parser': {'queue': 'high'},
+    # -- LOW PRIORITY QUEUE -- #
+    'web.tasks.task_delete_old_records': {'queue': 'low'},
 }
-
-
-
 
 # Set celery timezone
 CELERY_ENABLE_UTC = True

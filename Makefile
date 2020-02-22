@@ -46,11 +46,13 @@ top:
 
 # Celery commands
 
-worker:
-	docker-compose exec web celery -A cnn worker -l info
+worker_high_queue:
+	docker exec -d celery_worker_CNN sh -c "celery worker -A cnn -c 4 -l info -E -n worker.high -Q high"
+worker_low_queue:
+	docker exec -d celery_worker_CNN sh -c "celery worker -A cnn -c 4 -l info -E -n worker.low -Q low"
 
 beat:
-	docker-compose exec web celery -A cnn beat -l info
+	docker-compose exec web celery beat -A cnn -l info
 
 flower:
 	docker-compose exec -it web flower -A cnn --port=5555
