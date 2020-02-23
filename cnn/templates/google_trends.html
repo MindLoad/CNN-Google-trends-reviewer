@@ -1,21 +1,46 @@
 {% extends "base.html" %}
 {% block content %}
-    <ul class="collapsible">
-        <li>
-            <div class="collapsible-header"><i class="material-icons"></i>First</div>
-            <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
-        </li>
-        <li>
-            <div class="collapsible-header"><i class="material-icons">place</i>Second</div>
-            <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
-        </li>
-    </ul>
+    <div id="accordion">
+        {% for trend in trends_collection %}
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        {{ trend.title }}
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body">
+                    {{ trend.snippet }}
+                    <br>
+                    <a href="{{ trend.url }}" target="top">{{ trend.url }}</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <!-- Pagination -->
+    <div class="section"></div>
+    <hr>
+    {% if is_paginated %}
+        <div class="center">
+            <ul class="pagination">
+                {% for i in paginator.page_range %}
+                    {% if page_obj.number == i %}
+                        <li class="active"><a href="{% url 'GoogleTrends' %}#!">{{ i }}</a></li>
+                    {% else %}
+                        <li class="waves-effect"><a href="{% url 'GoogleTrends' %}?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <hr>
+    <div class="section"></div>
 {% endblock %}
 {% block js %}
     <script>
-        M.AutoInit();
-        $(document).ready(function(){
-            $('.collapsible').collapsible();
-        });
+        $('.collapse').collapse()
     </script>
 {% endblock %}

@@ -12,13 +12,14 @@ import pytz
 import typing
 import datetime
 import feedparser
+import requests
 
 from time import mktime
 
 from bs4 import BeautifulSoup
 from returns import maybe
 
-from .models import GoogleTrendsAtom
+from . import models as m
 
 
 class TrendsParser:
@@ -38,9 +39,9 @@ class TrendsParser:
         parser = feedparser.parse(cls.GOOGLE_TRENDS_HOURLY_ATOM)
         if parser.status != 200 or not getattr(parser, 'entries', False):
             return None
-        existed = GoogleTrendsAtom.objects.values_list('snippet', flat=True)
+        existed = m.GoogleTrendsAtom.objects.values_list('snippet', flat=True)
         result = [
-            GoogleTrendsAtom(
+            m.GoogleTrendsAtom(
                 title=entry.title,
                 url=entry.ht_news_item_url,
                 published=datetime.datetime.fromtimestamp(mktime(entry.published_parsed)).replace(tzinfo=pytz.UTC),
@@ -66,6 +67,20 @@ class ChannelParser:
     """
     Parse google channels
     """
+
+    CNN_RSS_LIST_URL = 'http://edition.cnn.com/services/rss/'
+
+    @classmethod
+    @maybe.maybe
+    def parse(cls) -> typing.Optional[requests.Response]:
+        """
+        retrieve cnn news rss
+        """
+
+        response = requests.get(cls.CNN_RSS_LIST_URL)
+        if response.status_code != 200:
+            return None
+        return response
 
 
 class NewsParser:

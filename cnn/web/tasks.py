@@ -6,9 +6,7 @@ from __future__ import absolute_import, unicode_literals
 from celery import shared_task
 
 import pytz
-import typing
 import feedparser
-import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from time import mktime
@@ -16,44 +14,43 @@ from time import mktime
 from returns import pipeline as pipeline_monad
 
 from .models import GoogleTrendsAtom, CnnChannels, CnnNews
-from . import parser as atom_parser
-
-CNN_RSS_LIST_URL = 'http://edition.cnn.com/services/rss/'
+from . import parser as parsers
 
 
 @shared_task
-def task_google_trends_parser() -> typing.Optional[str]:
+def task_google_trends_parser() -> str:
     """
     Shedule: every hour
     :description: add Google trends
     """
 
-    trends = atom_parser.TrendsParser.parse()
+    trends = parsers.TrendsParser.parse()
     if not pipeline_monad.is_successful(trends):
-        return
+        return f"Error parsing google trends"
 
     trends = trends.unwrap()
     GoogleTrendsAtom.objects.bulk_create(trends)
 
-    return f"Number of added trends: {len(trends)}"
+    return f"Added trends: {len(trends)}"
 
 
 @shared_task
-def task_cnn_channels_parser() -> None:
+def task_cnn_channels_parser() -> str:
     """
     :Shedule: everyday, at 23:49
     :description: update CnnChannels Model from main Cnn page
     """
 
-    make_request = requests.get(CNN_RSS_LIST_URL)
-    if make_request.status_code != 200:
-        return
-    parser = BeautifulSoup(make_request.text, 'html.parser')
+    response = parsers.ChannelParser.parse()
+    if not pipeline_monad.is_successful(response):
+        return "Error while trying to get Cnn news channels"
+    parser = BeautifulSoup(response.unwrap().text, 'html.parser')
     feed_channels = parser.find_all('a')
     existed_channels = CnnChannels.objects.values('url')
     for each in feed_channels:
         if each.text and each.text.endswith('.rss') and each.text not in (channel['url'] for channel in existed_channels):
             CnnChannels.objects.add_channel(each.text)
+    return f"Add channels: {len(feed_channels)}"
 
 
 @shared_task

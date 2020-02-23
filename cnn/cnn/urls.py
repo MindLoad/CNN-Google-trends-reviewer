@@ -24,5 +24,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('news', views.NewsList.as_view(), name='CnnNews'),
     path('news-in-trend', views.RelevantNews.as_view(), name='CnnRelevantNews'),
-    path('trends', TemplateView.as_view(template_name='google_trends.html'), name='GoogleTrends'),
+    path('trends', views.GoogleTrends.as_view(template_name='google_trends.html'), name='GoogleTrends'),
 ]
