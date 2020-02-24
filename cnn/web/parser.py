@@ -5,7 +5,6 @@ Parsers class
 __all__ = [
     'TrendsParser',
     'ChannelParser',
-    'NewsParser'
 ]
 
 import pytz
@@ -81,9 +80,3 @@ class ChannelParser:
         if response.status_code != 200:
             return None
         return response
-
-
-class NewsParser:
-    """
-    Parse google news
-    """

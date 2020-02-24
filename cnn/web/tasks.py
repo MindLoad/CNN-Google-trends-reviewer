@@ -7,9 +7,11 @@ from celery import shared_task
 
 import pytz
 import feedparser
-from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
 from time import mktime
+import datetime
+from bs4 import BeautifulSoup
+
+from django.utils import timezone
 
 from returns import pipeline as pipeline_monad
 
@@ -47,34 +49,40 @@ def task_cnn_channels_parser() -> str:
     parser = BeautifulSoup(response.unwrap().text, 'html.parser')
     feed_channels = parser.find_all('a')
     existed_channels = CnnChannels.objects.values('url')
+    added_channels = 0
     for each in feed_channels:
         if each.text and each.text.endswith('.rss') and each.text not in (channel['url'] for channel in existed_channels):
             CnnChannels.objects.add_channel(each.text)
-    return f"Add channels: {len(feed_channels)}"
+            added_channels += 1
+    return f"Add channels: {added_channels}"
 
 
 @shared_task
-def task_cnn_news_parser() -> None:
+def task_cnn_news_parser() -> str:
     """
     :Schedule: every half hour
     :description: collect CNN news from each channel
     """
 
     cnn_channel = CnnChannels.objects.all()
-    if cnn_channel.count() == 0:
-        return
+    if not cnn_channel:
+        return f"No CNN channels..."
     existed_news = CnnNews.objects.values('title')
     for channel in cnn_channel:
         parser = feedparser.parse(channel.url)
+        added_news = 0
         for feed in parser.entries:
             if not feed.title or feed.title in (news['title'] for news in existed_news):
                 continue
             try:
-                posted = datetime.fromtimestamp(mktime(feed.published_parsed)).replace(tzinfo=pytz.UTC)
+                posted = datetime.datetime.fromtimestamp(mktime(feed.published_parsed)).replace(tzinfo=pytz.UTC)
             except (KeyError, AttributeError, TypeError) as error:
                 print(f"RSS Parse Error: {error}")
-                posted = datetime.now().replace(tzinfo=pytz.UTC)
+                posted = timezone.now()
+            finally:
+                added_news += 1
             CnnNews.objects.add_news(channel, feed.title, feed.link, posted)
+        return f"Add news: {added_news}"
 
 
 @shared_task
@@ -84,7 +92,7 @@ def task_delete_old_records() -> None:
     :description: delete objects from CnnNew & GoogleTrendsAtom models older than week
     """
 
-    previous_week = datetime.now() - timedelta(days=7)
+    previous_week = timezone.now() - timezone.timedelta(days=7)
     old_trends = GoogleTrendsAtom.objects.filter(created__lt=previous_week)
     old_trends.delete()
     old_news = CnnNews.objects.filter(created__lt=previous_week)
