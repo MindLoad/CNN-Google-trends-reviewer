@@ -2,9 +2,10 @@ import os
 import kombu
 from datetime import timedelta
 from celery.schedules import crontab
+from pathlib import Path
 from kombu import Queue, Exchange
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+BASE_DIR = Path(__file__).resolve(strict=True).parents[1]
 
 SECRET_KEY = os.getenv('DJANGO_KEY', '5#3_--@efvk4zok#@27c8hzv6wjrqfw6$*$w1j@=wzixbh4gbe')
 DEBUG = True
@@ -49,7 +50,7 @@ TEMPLATES = [
         },
     },
 ]
-TEMPLATE_ROOT = os.path.join(BASE_DIR, 'templates')
+TEMPLATE_ROOT = BASE_DIR / "templates"
 
 WSGI_APPLICATION = 'cnn.wsgi.application'
 
