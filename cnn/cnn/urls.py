@@ -17,11 +17,12 @@ from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
 
-from web.views import NewsList, RelevantNews
+from web import views
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='index'),
     path('admin/', admin.site.urls),
-    path('news', NewsList.as_view(), name='CnnNews'),
-    path('news-in-trend', RelevantNews.as_view(), name='CnnRelevantNews'),
+    path('news', views.NewsList.as_view(), name='CnnNews'),
+    path('news-in-trend', views.RelevantNews.as_view(), name='CnnRelevantNews'),
+    path('trends', views.GoogleTrends.as_view(template_name='google_trends.html'), name='GoogleTrends'),
 ]

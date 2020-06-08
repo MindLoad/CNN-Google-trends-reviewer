@@ -1,9 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
-<h3 class="center red-text text-darken-4">CNN / Google Trends</h3>
-<a href="{% url 'CnnNews' %}">All CNN news:</a>
-<span>Show all CNN news from all CNN rss channels</span>
-<br>
-<a href="{% url 'CnnRelevantNews' %}">Relevant CNN News</a>
-<span>CNN news relevant to Google Trends</span>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-subtitle mb-2 text-muted">Channels news</h5>
+            <p>Show all CNN news from all CNN rss channels</p>
+            <a href="{% url 'CnnNews' %}" class="card-link">All CNN news</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-subtitle mb-2 text-muted">Relevant news</h5>
+            <p>CNN news relevant to Google Trends</p>
+            <a href="{% url 'CnnRelevantNews' %}" class="card-link">Relevant CNN News</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-subtitle mb-2 text-muted">Google Trends</h5>
+            <p>Show all Google Trends from atom rss</p>
+            <a href="{% url 'GoogleTrends' %}" class="card-link">Google Trends</a>
+        </div>
+    </div>
 {% endblock %}

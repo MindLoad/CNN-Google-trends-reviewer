@@ -1,12 +1,15 @@
 import os
+import kombu
 from datetime import timedelta
 from celery.schedules import crontab
+from pathlib import Path
+from kombu import Queue, Exchange
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve(strict=True).parents[1]
 
 SECRET_KEY = os.getenv('DJANGO_KEY', '5#3_--@efvk4zok#@27c8hzv6wjrqfw6$*$w1j@=wzixbh4gbe')
-DEBUG = False
+DEBUG = True
+TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
@@ -18,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'web.apps.WebConfig',
     'django_extensions',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -47,9 +51,10 @@ TEMPLATES = [
         },
     },
 ]
-TEMPLATE_ROOT = os.path.join(BASE_DIR, 'templates')
+TEMPLATE_ROOT = BASE_DIR / "templates"
 
-WSGI_APPLICATION = 'cnn.wsgi.application'
+# WSGI_APPLICATION = 'cnn.wsgi.application'
+ASGI_APPLICATION = 'cnn.routing.application'
 
 # Database
 DATABASES = {
@@ -92,31 +97,72 @@ STATICFILES_DIRS = ('static', )
 STATIC_URL = '/static/'
 STATIC_ROOT = ''
 
-CELERY_BROKER_URL = 'redis://redis:6379'
+# REST
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 25
+}
+
+# SOLR
+SOLR_HOST = 'http://solr_CNN:8983/solr/search_core/'
+
+# Set celery errors
+CELERY_SEND_TASK_ERROR_EMAILS = False
+
+# CELERY_BROKER_URL = 'redis://redis:6379'  # Redis broker
+CELERY_BROKER_URL = 'amqp://admin:rabbitpass@rabbitmq:5672'
+
+# Set result backend
 CELERY_RESULT_BACKEND = 'redis://redis:6379'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_RESULT_SERIALIZER = 'json'
+CELERY_REDIS_MAX_CONNECTIONS = 1
+
+# Set celery serializer
 CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['application/json']
+
+# Set celery Queues
+CELERY_TASK_QUEUES = (
+    Queue('default', Exchange('default'), routing_key='default'),
+    Queue('high', Exchange('high'), routing_key='high'),
+    Queue('low', Exchange('low'), routing_key='low'),
+)
+CELERY_TASK_DEFAULT_QUEUE = 'default'
+CELERY_TASK_DEFAULT_EXCHANGE = 'default'
+CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
+CELERY_TASK_ROUTES = {
+    # -- HIGH PRIORITY QUEUE -- #
+    'web.tasks.task_google_trends_parser': {'queue': 'high'},
+    'web.tasks.task_cnn_news_parser': {'queue': 'high'},
+    # -- LOW PRIORITY QUEUE -- #
+    'web.tasks.task_delete_old_records': {'queue': 'low'},
+}
+
+# Set celery timezone
+CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = 'Europe/Kiev'
+
+# Set celery schedule
 CELERY_BEAT_SCHEDULE = {
     'task-cnn-news-parser': {
         'task': 'web.tasks.task_cnn_news_parser',
-        'schedule': timedelta(seconds=1800),
+        'schedule': timedelta(seconds=100),
         # 'args': (*args) # if celery task receive args,
     },
     'task-cnn-channels-parser': {
         'task': 'web.tasks.task_cnn_channels_parser',
-        'schedule': crontab(minute=49, hour=23),
+        'schedule': timedelta(seconds=300),
     },
     'task-google-trends-parser': {
         'task': 'web.tasks.task_google_trends_parser',
-        'schedule': timedelta(seconds=3600),
+        'schedule': timedelta(seconds=200),
     },
     'task-delete-old-records': {
         'task': 'web.tasks.task_delete_old_records',
-        'schedule': crontab(minute=59, hour=23),
+        'schedule': timedelta(seconds=350),
     },
 }
+FLOWER_BROKER = 'amqp://user:password@broker:5672'
 
 try:
     from .local_settings import *

@@ -18,20 +18,21 @@ class BaseModel(models.Model):
 
 class GoogleTrendsAtomManager(models.Manager):
     """ Custom manager for GoogleTrendsAtom """
-    def add_trend(self, title, url, updated):
-        record = self.create(title=title, url=url, updated=updated)
+    def add_trend(self, title, url, published, snippet):
+        record = self.create(title=title, url=url, published=published, snippet=snippet)
         return record
 
 
 class GoogleTrendsAtom(BaseModel):
     """ Google Trends Model """
 
-    updated = models.DateTimeField()
+    published = models.DateTimeField()
+    snippet = models.CharField(max_length=512, null=True)
 
     objects = GoogleTrendsAtomManager()
 
     class Meta(BaseModel.Meta):
-        ordering = ['-updated']
+        ordering = ['-published']
         verbose_name_plural = 'Google Trends'
 
 

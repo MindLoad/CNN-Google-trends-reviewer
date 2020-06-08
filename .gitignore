@@ -107,8 +107,8 @@ ENV/
 *.sqlite3
 
 #Personal Files
-local_settings.py
 .idea
+db/
 *.dir
 *.dat
 *.pid
