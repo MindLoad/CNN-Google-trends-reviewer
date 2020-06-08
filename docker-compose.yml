@@ -32,6 +32,17 @@ services:
       - ./initdb:/docker-entrypoint-initdb.d
     restart: on-failure
 
+  solr:
+    image: library/solr:8.5
+    container_name: solr_CNN
+    ports:
+      - 8983:8983
+    volumes:
+      - ./db/solr:/opt/solr/server/solr/search_core
+    command:
+      - solr-precreate
+      - search_core
+
   redis:               # Redis - result backend
     image: redis:5.0.7-alpine
     container_name: redis_CNN

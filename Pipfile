@@ -31,6 +31,8 @@ model-mommy = "~=1.6"
 pytz = ">=2019.3"
 six = "~=1.14"
 Django = "~=3.0"
+djangorestframework = "~=3.11"
+django-filter = "~=2.2"
 Werkzeug = "~=1.0"
 requests = "~=2.22"
 python-dateutil = "~=2.8"
@@ -39,10 +41,12 @@ returns = "~=0.13"
 # DB
 psycopg2 = "==2.8.4"
 redis = "~=3.4"
+pysolr = ">=3.9"
 
 # Async
-celery = "~=4.4"
+celery = "==4.4.5"
 django-celery-results = "~=1.2"
+channels = "~=2.4"
 
 # Parsers
 beautifulsoup4 = "~=4.8"

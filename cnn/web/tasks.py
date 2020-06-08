@@ -10,8 +10,10 @@ import feedparser
 from time import mktime
 import datetime
 from bs4 import BeautifulSoup
+import pysolr
 
 from django.utils import timezone
+from django.conf import settings
 
 from returns import pipeline as pipeline_monad
 
@@ -64,6 +66,7 @@ def task_cnn_news_parser() -> str:
     :description: collect CNN news from each channel
     """
 
+    solr = pysolr.Solr(settings.SOLR_HOST, timeout=10, always_commit=True)
     cnn_channel = CnnChannels.objects.all()
     if not cnn_channel:
         return f"No CNN channels..."
@@ -81,7 +84,14 @@ def task_cnn_news_parser() -> str:
                 posted = timezone.now()
             finally:
                 added_news += 1
-            CnnNews.objects.add_news(channel, feed.title, feed.link, posted)
+            news = CnnNews.objects.add_news(channel, feed.title, feed.link, posted)
+            solr.add([
+                {
+                    "title": feed.title,
+                    "news_id": news.id,
+                    "posted": posted.isoformat()
+                }
+            ])
         return f"Add news: {added_news}"
 
 

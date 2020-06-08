@@ -15,7 +15,7 @@ ADD https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/do
 RUN tar -C /usr/local/bin -xzvf /dockerize.tar.gz && rm -f /dockerize.tar.gz
 
 # Install system dependencies
-RUN apk update && apk add postgresql-dev gcc musl-dev
+RUN apk update && apk add postgresql-dev gcc musl-dev libffi-dev
 
 # Insall ssh agent
 RUN apk add --no-cache openssh make && \

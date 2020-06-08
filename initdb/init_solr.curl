@@ -1,0 +1,24 @@
+curl -X POST -H 'Content-type:application/json' --data-binary '{
+    "add-field": {
+        "name":"title",
+        "type":"text_general",
+        "stored":true,
+        "indexed":true,
+        "uninvertible":true,
+        "required":true
+    },
+    "add-field": {
+        "name":"news_id",
+        "type":"string",
+        "stored":true,
+        "docValues":true,
+        "required":true
+    },
+    "add-field": {
+        "name":"posted",
+        "type":"pdate",
+        "stored":true,
+        "docValues":true,
+        "required":true
+    }
+}' http://localhost:8983/solr/search_core/schema

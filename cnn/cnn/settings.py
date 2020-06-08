@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'web.apps.WebConfig',
     'django_extensions',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -52,7 +53,8 @@ TEMPLATES = [
 ]
 TEMPLATE_ROOT = BASE_DIR / "templates"
 
-WSGI_APPLICATION = 'cnn.wsgi.application'
+# WSGI_APPLICATION = 'cnn.wsgi.application'
+ASGI_APPLICATION = 'cnn.routing.application'
 
 # Database
 DATABASES = {
@@ -94,6 +96,15 @@ USE_TZ = True
 STATICFILES_DIRS = ('static', )
 STATIC_URL = '/static/'
 STATIC_ROOT = ''
+
+# REST
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 25
+}
+
+# SOLR
+SOLR_HOST = 'http://solr_CNN:8983/solr/search_core/'
 
 # Set celery errors
 CELERY_SEND_TASK_ERROR_EMAILS = False
