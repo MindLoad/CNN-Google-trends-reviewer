@@ -30,7 +30,7 @@ model-mommy = "~=1.6"
 # Django
 pytz = ">=2019.3"
 six = "~=1.14"
-Django = "~=3.0"
+Django = "~=3.1"
 djangorestframework = "~=3.11"
 django-filter = "~=2.2"
 Werkzeug = "~=1.0"
